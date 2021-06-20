@@ -1,8 +1,7 @@
 #%%
+from requests.api import get
 from selenium import webdriver
 from time import sleep
-
-from selenium.webdriver import common
 
 driver = webdriver.Chrome()
 
@@ -35,6 +34,11 @@ for i in range(1):
 #%%
 # Scrape data from all_plants_list
 all_plants_data = []
+colour_imgs_autumn = []
+colour_imgs_spring = []
+colour_imgs_summer = []
+colour_imgs_winter = []
+
 for plant in all_plants_list:
   try:
     plant_item_details = driver.get(plant)
@@ -113,9 +117,8 @@ for plant in all_plants_list:
     print(all_summer_imgs)
     all_winter_imgs = [img.get_attribute('src') for img in driver.find_elements_by_xpath('.//div[4]/ul/li/div/div/img')]
     print(all_winter_imgs)
-
     sleep(5)
-
+    
     all_plants_data_dict = {
       'ScientificName': scientific_name,
       'CommonName': common_name,
@@ -142,13 +145,24 @@ for plant in all_plants_list:
       'Pruning': pruning,
       'Pests': pests,
       'Diseases': diseases,
+    }
+    colours_autumn = {
       'ColourInAutumn': all_autumn_imgs,
+    }
+    colours_spring = {
       'ColourInSpring': all_spring_imgs,
+    }
+    colours_summer = {
       'ColourInSummer': all_summer_imgs,
+    }
+    colours_winter = {
       'ColourInWinter': all_winter_imgs,
     }
     all_plants_data.append(all_plants_data_dict)
-
+    colour_imgs_autumn.append(colours_autumn)
+    colour_imgs_spring.append(colours_spring)
+    colour_imgs_summer.append(colours_summer)
+    colour_imgs_winter.append(colours_winter)
   except: Exception
   pass
 
@@ -157,4 +171,9 @@ print(all_plants_data)
 
 #%%
 driver.quit()
-# %%
+
+# for each plant, create a new dictionary inside each plant, where you create
+# for each plant colour file, you can name the file with the seasons
+# use for loop to append the number of the img
+# to clean data, can use 'replace', a method for cleaning new lines, white space and tabs.
+# instead of new line, replace it with whitespace
