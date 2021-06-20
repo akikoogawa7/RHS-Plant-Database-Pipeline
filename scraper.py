@@ -2,6 +2,7 @@
 from requests.api import get
 from selenium import webdriver
 from time import sleep
+import pandas
 
 driver = webdriver.Chrome()
 
@@ -145,17 +146,29 @@ for plant in all_plants_list:
       'Pruning': pruning,
       'Pests': pests,
       'Diseases': diseases,
+      'ColourInAutumn': all_autumn_imgs,
+      'ColourInSpring': all_spring_imgs,
+      'ColourInSummer': all_summer_imgs,
+      'ColourInWinter': all_winter_imgs,
     }
     colours_autumn = {
+      'CommonName': common_name,
+      'ScientificName': scientific_name,
       'ColourInAutumn': all_autumn_imgs,
     }
     colours_spring = {
+      'CommonName': common_name,
+      'ScientificName': scientific_name,
       'ColourInSpring': all_spring_imgs,
     }
     colours_summer = {
+      'CommonName': common_name,
+      'ScientificName': scientific_name,
       'ColourInSummer': all_summer_imgs,
     }
     colours_winter = {
+      'CommonName': common_name,
+      'ScientificName': scientific_name,
       'ColourInWinter': all_winter_imgs,
     }
     all_plants_data.append(all_plants_data_dict)
@@ -168,6 +181,7 @@ for plant in all_plants_list:
 
 #%%
 print(all_plants_data)
+# print(colour_imgs_autumn)
 
 #%%
 driver.quit()
