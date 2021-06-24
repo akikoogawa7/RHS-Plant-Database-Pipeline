@@ -192,8 +192,3 @@ df.to_csv('rhs_plant_database.csv')
 
 #%%
 driver.quit()
-
-#%%
-# to clean data, can use 'replace', a method for cleaning new lines, white space and tabs.
-# instead of new line, replace it with whitespace
-
