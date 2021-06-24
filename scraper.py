@@ -23,35 +23,14 @@ def get_all_plants_on_page():
 sleep(10)
 
 #%%
-# Loops through all pages 
-#350 out of 30518 pages
+# Loops through all pages 1 by 1 in 50s
+# Out of 30518 pages
 all_plants_list = []
 for i in range(50):
   base_url = 'https://www.rhs.org.uk/plants/search-results?context=b%253D0%2526hf%253D10%2526l%253Den%2526q%253D%252523all%2526s%253Ddesc%252528plant_merged%252529%2526sl%253Dplants&s=desc(plant_merged)&form-mode=true&page='
   driver.get(base_url + str(i))
   new_plants = get_all_plants_on_page()
   all_plants_list.extend(new_plants)
-
-#%%
-# Loops through all pages up to 100
-#30518 pages
-second_all_plants_list = []
-for i in range(4225, 30518):
-  base_url = 'https://www.rhs.org.uk/plants/search-results?context=b%253D0%2526hf%253D10%2526l%253Den%2526q%253D%252523all%2526s%253Ddesc%252528plant_merged%252529%2526sl%253Dplants&s=desc(plant_merged)&form-mode=true&page='
-  driver.get(base_url + str(i))
-  new_plants = get_all_plants_on_page()
-  second_all_plants_list.extend(new_plants)
-
-
-#%%
-# import csv
-# #%%
-# all_plants_list = []
-# with open('extract_links.csv', 'r') as f:
-#   file = csv.reader(f)
-#   all_plants_list = list(file)
-# print(all_plants_list)
-# print(len(all_plants_list))
 
 #%%
 # Scrape data from all_plants_list
@@ -202,8 +181,6 @@ for plant in all_plants_list:
 
 #%%
 print(len(all_plants_list))
-#350
-#%%
 
 #%%
 import pandas as pd
@@ -212,15 +189,18 @@ print(df)
 
 #%%
 df.to_csv('rhs_plant_database.csv')
+
 #%%
 df = pd.read_csv('rhs_plant_database.csv', delimiter=',')
+
 #%%
 pd.read_csv('rhs_plant_database.csv')
+
 #%%
 driver.quit()
 
 #%%
-
 # to clean data, can use 'replace', a method for cleaning new lines, white space and tabs.
 # instead of new line, replace it with whitespace
+
 # %%
