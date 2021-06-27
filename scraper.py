@@ -26,7 +26,7 @@ sleep(10)
 # Loops through all pages 1 by 1 in 50s
 # Out of 30518 pages
 all_plants_list = []
-for i in range(50):
+for i in range(300, 400):
   base_url = 'https://www.rhs.org.uk/plants/search-results?context=b%253D0%2526hf%253D10%2526l%253Den%2526q%253D%252523all%2526s%253Ddesc%252528plant_merged%252529%2526sl%253Dplants&s=desc(plant_merged)&form-mode=true&page='
   driver.get(base_url + str(i))
   new_plants = get_all_plants_on_page()
@@ -188,7 +188,13 @@ df = pd.DataFrame(all_plants_data)
 print(df)
 
 #%%
-df.to_csv('rhs_plant_database.csv')
+df.to_csv('rhs_plant_database_400.csv')
+
+#%%
+# Append to original csv
+import pandas as pd
+
+df.to_csv('rhs_plant_database.csv', mode='a')
 
 #%%
 driver.quit()
