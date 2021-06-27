@@ -2,23 +2,14 @@
 from numpy import float64
 import pandas as pd
 
-#%%
 df = pd.read_csv('clean_test.csv', delimiter=',')
-
-#%%
 pd.read_csv('clean_test.csv')
-
-#%%
 print(len(df))
 
 #%%
 # Renaming unnamed column to ID
 df.rename(columns={'Unnamed: 0':'ID'}, inplace=True )
 
-# %%
-df.head()
-
-# %%
 # Removing \n
 df['Family'] = df['Family'].str.replace('Family\n','')
 df['Genus'] = df['Genus'].str.replace('Genus\n','')
@@ -56,52 +47,65 @@ df.dtypes
 print(df["UltimateHeight"].unique())
 
 #%%
-df[["UltimateSpread"]]
+# Get Ulimate Height min and max values 
+def getMinValues(s):
+    if s == "Higher than 12 metres":
+        return '12'
+    else:
+        if '-' in s:
+            s = s.split('-', 1)[0]
+            return s
+
+def getMaxValues(s):
+    if s == "Up to 10 cm":
+        return '10'
+    else:
+        if '-' in s:
+            s = s.split('-', 1)[1]
+            return s
+
+# Get Ultimate Spread min and max values
 
 #%%
-"""Ultimate Height Clean"""
-
-# remove metres string
-df["UltimateHeight"] = df["UltimateHeight"].str.replace('metres', '')
-
-#%%
-df["UltimateHeight_Above_12.0"] = df.UltimateHeight == 'Higher than 12 '
-df["UltimateHeight_Above_12.0"]
+# Apply UH min max function
+df["UltimateHeight_Min"] = df["UltimateHeight"].apply(getMinValues)
+df["UltimateHeight_Max"] = df["UltimateHeight"].apply(getMaxValues)
 
 #%%
-df["UltimateHeight_Max_0.1"] = df.UltimateHeight == 'Up to 10 cm'
-df["UltimateHeight_Max_0.1"]
+# Remove metres string
+df["UltimateHeight_Min"] = df["UltimateHeight_Min"].str.replace('metres', '')
+df["UltimateHeight_Max"] = df["UltimateHeight_Max"].str.replace('metres', '')
 
 #%%
-"""Ultimate Spread Clean"""
-
-# remove metres string
-df["UltimateSpread"] = df["UltimateSpread"].str.replace('metres', '')
-df["UltimateSpread"] = df["UltimateSpread"].str.replace('metre', '')
+# Cast str to float
+df["UltimateHeight_Min"].astype(float64)
+df["UltimateHeight_Max"].astype(float64)
 
 #%%
-df["UltimateSpread_Above_8.0"] = df.UltimateSpread == 'wider than 8 '
-df["UltimateSpread_Above_8.0"]
+# Check values
+df["UltimateHeight_Min"]
+df["UltimateHeight_Max"]
+
+df.head()
 
 #%%
-df["UltimateSpread"].unique()
+# Apply US min and max function
+# df["UltimateSpread"].unique()
+
 #%%
 # cast values and integer
 df["UltimateHeight"] = df[["UltimateHeight"]].astype(float)
 #%%
 # Convert cm to m
-df["UltimateHeight"] = df[["UltimateHeight"] == 10].apply(lambda n = n x 100)
+df["UltimateHeight_Max"] = df[["UltimateHeigh_Max"] == 10].apply(lambda n = n x 100)
+
 #%%
-df.iloc[200]
+df.iloc[220]
 
 #%%
 df.info()
 
-#%%
-df.drop('HeightAbove12', axis=1)
-
-
 # get images into s3
-# process numerical data such as min height, max height
+# process numerical data such as min height, max height - different ways of cleaning (higher than, up to, '-')
 # %%
 df.to_csv('cleaned_database.csv')
