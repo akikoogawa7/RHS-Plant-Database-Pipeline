@@ -2,15 +2,14 @@
 from numpy import float64, integer
 import pandas as pd
 
-df = pd.read_csv('clean_test.csv', delimiter=',')
-pd.read_csv('clean_test.csv')
+df = pd.read_csv('test_rhs_plant_database.csv', delimiter=',')
+pd.read_csv('test_rhs_plant_database.csv')
 print(len(df))
 
 #%%
 # Renaming unnamed column to ID
-df.rename(columns={'Unnamed: 0':'ID'}, inplace=True )
-
 # Removing \n
+df.rename(columns={'Unnamed: 0':'ID'}, inplace=True )
 df['Family'] = df['Family'].str.replace('Family\n','')
 df['Genus'] = df['Genus'].str.replace('Genus\n','')
 df['PlantRange'] = df['PlantRange'].str.replace('Plant range\n','')
