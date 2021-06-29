@@ -2,12 +2,14 @@
 from requests.api import get
 from selenium import webdriver
 from time import sleep
+from csv import reader
+import threading
+import concurrent.futures
+import pandas as pd
 
 driver = webdriver.Chrome()
-
 #%%
 main = driver.get('https://www.rhs.org.uk/Plants/Search-Results?form-mode=true&context=l%3Den%26q%3D%2523all%26sl%3DplantForm')
-
 #%%
 # Begins looping through elements for links
 def get_all_plants_on_page():
@@ -19,19 +21,18 @@ def get_all_plants_on_page():
       plant_list.append(link)
       print(link)
   return plant_list
-  
-sleep(10)
-
-#%%
+  # def __init__(self):
+  #   t = threading.Thread(target=self.get_all_plants_on_page)
+  #   t.start() 
+sleep(5)
 # Loops through all pages 1 by 1 in 50s
 # Out of 30518 pages
 all_plants_list = []
-for i in range(300, 400):
+for i in range(450, 500): #450,500 (rhs test database)
   base_url = 'https://www.rhs.org.uk/plants/search-results?context=b%253D0%2526hf%253D10%2526l%253Den%2526q%253D%252523all%2526s%253Ddesc%252528plant_merged%252529%2526sl%253Dplants&s=desc(plant_merged)&form-mode=true&page='
   driver.get(base_url + str(i))
   new_plants = get_all_plants_on_page()
   all_plants_list.extend(new_plants)
-
 #%%
 # Scrape data from all_plants_list
 all_plants_data = []
@@ -39,12 +40,10 @@ colour_imgs_autumn = []
 colour_imgs_spring = []
 colour_imgs_summer = []
 colour_imgs_winter = []
-
 for plant in all_plants_list:
   try:
     plant_item_details = driver.get(plant)
     plant_detail_box = driver.find_elements_by_xpath('.//*[@id="skip-content"]/div[1]/div[1]/div/div/div[1]')
-  
     """Type"""
     scientific_name = driver.find_element_by_xpath('.//h1').text
     print(scientific_name)
@@ -58,9 +57,6 @@ for plant in all_plants_list:
     print(genus)
     plant_range = driver.find_element_by_xpath('.//*[@id="ctl00_ctl00_ctl00_plcMainContent_plcMainContent_plcMainContent_PlantDetail1_Li4"]/p').text
     print(plant_range)
-    # pollinator_perfect = driver.find_element_by_xpath('.//h5').text
-    # print(pollinator_perfect)
-
     """Characteristics"""
     foliage = driver.find_element_by_xpath('.//*[@id="skip-content"]/div[1]/div[1]/div/div/div[2]/div/div[1]/div/div/div/ul/li[1]/p').text
     print(foliage)
@@ -68,7 +64,6 @@ for plant in all_plants_list:
     print(habit)
     hardiness = driver.find_element_by_xpath('.//*[@id="skip-content"]/div[1]/div[1]/div/div/div[2]/div/div[1]/div/div/div/ul/li[3]/p').text
     print(hardiness)
-
     """Sunlight"""
     sunlight = driver.find_element_by_xpath('.//*[@id="skip-content"]/div[1]/div[1]/div/div/div[2]/div/div[3]/div/div/div[1]/ul').text
     print(sunlight)
@@ -76,7 +71,6 @@ for plant in all_plants_list:
     print(aspect)
     exposure = driver.find_element_by_xpath('//*[@id="skip-content"]/div[1]/div[1]/div/div/div[2]/div/div[3]/div/div/div[2]/ul/li[2]/p').text
     print(exposure)
-
     """Soil"""
     soil = driver.find_element_by_xpath('.//*[@id="skip-content"]/div[1]/div[1]/div/div/div[2]/div/div[4]/div/div/div[1]/ul').text
     print(soil)
@@ -84,7 +78,6 @@ for plant in all_plants_list:
     print(moisture)
     pH = driver.find_element_by_xpath('.//*[@id="skip-content"]/div[1]/div[1]/div/div/div[2]/div/div[4]/div/div/div[2]/ul/li[3]/p').text
     print(pH)
-
     """Size"""
     ultimate_height = driver.find_element_by_xpath('.//*[@id="skip-content"]/div[1]/div[1]/div/div/div[2]/div/div[5]/div/div/div/ul/li[1]/p').text
     print(ultimate_height)
@@ -92,7 +85,6 @@ for plant in all_plants_list:
     print(ultimate_spread)
     time_to_ultimate_height = driver.find_element_by_xpath('.//*[@id="skip-content"]/div[1]/div[1]/div/div/div[2]/div/div[5]/div/div/div/ul/li[3]/p').text
     print(time_to_ultimate_height)
-
     """How to Grow"""
     cultivation = driver.find_element_by_xpath('.//*[@id="skip-content"]/div[1]/div[1]/div/div/div[3]/div[1]/div[1]/p[1]').text
     print(cultivation)
@@ -100,7 +92,6 @@ for plant in all_plants_list:
     print(propagation)
     suggested_planting_locations = driver.find_element_by_xpath('.//*[@id="skip-content"]/div[1]/div[1]/div/div/div[3]/div[1]/div[1]/p[3]').text
     print(suggested_planting_locations)
-
     """How to Care"""
     pruning = driver.find_element_by_xpath('.//*[@id="skip-content"]/div[1]/div[1]/div/div/div[3]/div[1]/div[2]/p[1]').text
     print(pruning)
@@ -108,7 +99,6 @@ for plant in all_plants_list:
     print(pests)
     diseases = driver.find_element_by_xpath('.//*[@id="skip-content"]/div[1]/div[1]/div/div/div[3]/div[1]/div[2]/p[3]').text
     print(diseases)
-
     """Colour in Season Images"""
     all_autumn_imgs = [img.get_attribute('src') for img in driver.find_elements_by_xpath('.//div[1]/ul/li/div/div/img')]
     print(all_autumn_imgs)
@@ -119,7 +109,7 @@ for plant in all_plants_list:
     all_winter_imgs = [img.get_attribute('src') for img in driver.find_elements_by_xpath('.//div[4]/ul/li/div/div/img')]
     print(all_winter_imgs)
     sleep(5)
-    
+
     all_plants_data_dict = {
       'ScientificName': scientific_name,
       'CommonName': common_name,
@@ -127,7 +117,6 @@ for plant in all_plants_list:
       'Family': family,
       'Genus': genus,
       'PlantRange': plant_range,
-      # 'PollinatorPerfect': pollinator_perfect,
       'Foliage': foliage,
       'Habit': habit,
       'Hardiness': hardiness,
@@ -179,22 +168,13 @@ for plant in all_plants_list:
   except: Exception
   pass
 
-#%%
-print(len(all_plants_list))
+# with concurrent.futures.ThreadPoolExecutor() as executor:
+#   executor.map(get_all_plants_on_page, )
 
-#%%
-import pandas as pd
 df = pd.DataFrame(all_plants_data)
 print(df)
 
-#%%
-df.to_csv('rhs_plant_database_400.csv')
+df.to_csv('rhs_plant_database500.csv')
 
-#%%
 # Append to original csv
-import pandas as pd
-
 df.to_csv('rhs_plant_database.csv', mode='a')
-
-#%%
-driver.quit()
