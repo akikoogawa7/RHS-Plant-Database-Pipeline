@@ -1,14 +1,14 @@
 #%%
-from numpy import float64, integer
 import pandas as pd
+from numpy import float64
 
-df = pd.read_csv('test_database.csv', delimiter=',')
-pd.read_csv('test_database.csv')
-print(len(df))
+df = pd.read_csv('rhs_plant_database.csv', delimiter=',')
+pd.read_csv('rhs_plant_database.csv')
+#%%
+df.head
 
 #%%
 # Renaming unnamed column to ID
-# Removing \n
 df.rename(columns={'Unnamed: 0':'ID'}, inplace=True )
 df['Family'] = df['Family'].str.replace('Family\n','')
 df['Genus'] = df['Genus'].str.replace('Genus\n','')
@@ -31,6 +31,7 @@ df['Moisture'] = df['Soil'].str.replace('Moisture\n', '')
 df['pH'] = df['pH'].str.replace('pH\n', '')
 df['UltimateHeight'] = df['UltimateHeight'].str.replace('Ultimate height\n', '')
 df['UltimateSpread'] = df['UltimateSpread'].str.replace('Ultimate spread\n', '')
+df['TimeToUltimateHeight'] = df['TimeToUltimateHeight'].str.replace('Time to ultimate height', '')
 df['TimeToUltimateHeight'] = df['TimeToUltimateHeight'].str.replace('Time to ultimate height\n', '')
 
 #%%
@@ -56,34 +57,41 @@ def getUSMin(s):
     else:
         if '-' in s:
             s = s.split('-', 1)[0]
-            return s
+        return s
 def getUSMax(s):
     if '-' in s:
         s = s.split('-', 1)[1]
         return s
-
+# Get Time to Ultimate Height min and max values
+def getTUHMin(s):
+    if s == 'more than 50 years':
+        return '50'
+    else:
+        if '-' in s:
+            s = s.split('-', 1)[0]
+        return s
+def getTUHMax(s):
+    if '1 year' in s:
+        return '1'
+    else:
+        if '-' in s:
+            s = s.split('-', 1)[1]
+        return s
 #%%
-# Apply UH min max function
-# Cast str to float
-# Strip str to remove whitespace
-# Convert 10cm to 0.1me
 df["UltimateHeight_Min"] = df["UltimateHeight"].apply(getUHMin).str.replace('metres', '').str.replace('metre', '').str.strip()
 df["UltimateHeight_Max"] = df["UltimateHeight"].apply(getUHMax).str.replace('metres', '').str.replace('metre', '').str.replace('10', '0.1').str.strip()
-# Apply US min max function, cast str to float
-df["UltimateSpread_Min"] = df["UltimateSpread"].apply(getUSMin).str.replace('metres', '').str.replace('metre', '').str.strip()
-df["UltimateSpread_Max"] = df["UltimateSpread"].apply(getUSMax).str.replace('metres', '').str.replace('metre', '').str.strip()
-
+df["UltimateSpread_Min"] = df["UltimateSpread"].apply(getUSMin).str.replace('metres', '').str.replace('metre', '').str.replace('Ultimate spread', '').str.strip()
+df["UltimateSpread_Max"] = df["UltimateSpread"].apply(getUSMax).str.replace('metres', '').str.replace('metre', '').str.replace('Ultimate spread', '').str.strip()
+df["TimeToUltimateHeight_Min"] = df["TimeToUltimateHeight"].apply(getTUHMin).str.replace('years', '').str.replace('year', '').str.replace('more than', '').str.strip()
+df["TimeToUltimateHeight_Max"] = df["TimeToUltimateHeight"].apply(getTUHMax).str.replace('years', '').str.replace('year', '').str.replace('more than', '').str.strip()
 #%%
+nan_value = float("NaN")
+df.replace("", nan_value, inplace=True)
 df["UltimateHeight_Min"].astype(float)
 df["UltimateHeight_Max"].astype(float)
 df["UltimateSpread_Min"].astype(float)
 df["UltimateSpread_Max"].astype(float)
-
-#%%
-df[["Foliage", "Hardiness", "Soil", "Pests", "Diseases", "pH", "Pruning", "Propagation"]]
-
+df["TimeToUltimateHeight_Min"].astype(float)
+df["TimeToUltimateHeight_Max"].astype(float)
 # %%
-df.to_csv('cleaned_test_database.csv')
-#%%
-df[["PlantRange", "Foliage", "Diseases", "Pests"]]
-# %%
+df.columns
