@@ -146,3 +146,5 @@ def scrape(links):
   df.to_csv('plants_database.csv')
 #%%
 scrape(links)
+
+# %%
